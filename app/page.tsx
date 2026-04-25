@@ -52,10 +52,10 @@ export default function Home() {
               $ ver módulos
             </a>
             <a
-              href="#modulos"
-              className="rounded border border-zinc-700 bg-zinc-900 px-8 py-3 text-sm font-semibold text-zinc-300 transition-all hover:border-zinc-500 hover:text-white"
+              href="/comandos"
+              className="rounded border border-zinc-700 bg-zinc-900 px-8 py-3 text-sm font-semibold text-zinc-300 transition-all hover:border-orange-500/50 hover:text-white"
             >
-              # leer más
+              # comandos &amp; shortcuts
             </a>
           </div>
 
