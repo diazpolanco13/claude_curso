@@ -39,6 +39,10 @@ app/globals.css           # Tokens de color y fuente con @theme de Tailwind v4
 - Fuente: `font-mono` en toda la UI (estética terminal)
 - No introducir colores ni fuentes fuera de esta paleta sin pedido explícito
 
+## Herramientas disponibles
+
+- **MCP de GitHub** — disponible via `mcp__github__*`. Usar para crear ramas, commits, pull requests y cualquier operación de Git remoto en lugar de `git push` manual cuando sea posible.
+
 ## Qué no hacer
 
 - No cambiar la estética visual sin que el usuario lo pida

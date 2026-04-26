@@ -18,28 +18,46 @@ type Item = {
 
 const slashCommands: { cmd: string; desc: string; priority: Priority }[] = [
   // Essential
-  { cmd: "/help",        desc: "Listar todos los comandos y ayuda disponible.",              priority: "essential" },
-  { cmd: "/clear",       desc: "Limpiar ventana de contexto y sesión actual.",               priority: "essential" },
-  { cmd: "/compact",     desc: "Compactar y limpiar historial para liberar contexto.",        priority: "essential" },
-  { cmd: "/model",       desc: "Elegir y cambiar el modelo activo (Opus, Sonnet, Haiku).",   priority: "essential" },
-  { cmd: "/config",      desc: "Abrir menú interactivo de configuración de Claude Code.",     priority: "essential" },
-  { cmd: "/init",        desc: "Analizar proyecto y crear/actualizar CLAUDE.MD.",             priority: "essential" },
+  { cmd: "/help",             desc: "Listar todos los comandos y ayuda disponible.",                                                                                                                                        priority: "essential" },
+  { cmd: "/clear",            desc: "Limpiar ventana de contexto y sesión actual.",                                                                                                                                         priority: "essential" },
+  { cmd: "/compact",          desc: "Compactar y limpiar historial para liberar contexto.",                                                                                                                                 priority: "essential" },
+  { cmd: "/model",            desc: "Elegir y cambiar el modelo activo (Opus, Sonnet, Haiku).",                                                                                                                             priority: "essential" },
+  { cmd: "/config",           desc: "Abrir menú interactivo de configuración de Claude Code.",                                                                                                                              priority: "essential" },
+  { cmd: "/init",             desc: "Analizar proyecto y crear/actualizar CLAUDE.MD.",                                                                                                                                      priority: "essential" },
   // Important
-  { cmd: "/context",     desc: "Ver estadísticas de contexto y uso de tokens.",              priority: "important" },
-  { cmd: "/usage",       desc: "Ver uso del plan activo y límites de la cuenta.",            priority: "important" },
-  { cmd: "/permissions", desc: "Ver y actualizar permisos de herramientas.",                 priority: "important" },
-  { cmd: "/mcp",         desc: "Ver y gestionar servidores MCP conectados.",                  priority: "important" },
-  { cmd: "/rewind",      desc: "Rebobinar a un punto anterior de la conversación (ESC+ESC).", priority: "important" },
-  { cmd: "/memory",      desc: "Mostrar y editar archivos de memoria del proyecto.",          priority: "important" },
+  { cmd: "/tasks",            desc: "Ver y gestionar las tareas activas de la sesión.",                                                                                                                                     priority: "important" },
+  { cmd: "/agents",           desc: "Ver y gestionar subagentes activos en la sesión.",                                                                                                                                     priority: "important" },
+  { cmd: "/fast",             desc: "Activar/desactivar modo rápido — usa Opus 4.6 con output más veloz sin cambiar a un modelo inferior.",                                                                                 priority: "important" },
+  { cmd: "/loop",             desc: "Ejecutar un prompt o slash command de forma recurrente. Omite el intervalo para que el modelo se autogestione. Ej: /loop 5m /review.",                                                priority: "important" },
+  { cmd: "/skills",           desc: "Listar todos los skills disponibles y sus capacidades.",                                                                                                                               priority: "important" },
+  { cmd: "/resume",           desc: "Reanudar la última sesión interrumpida.",                                                                                                                                              priority: "important" },
+  { cmd: "/code-review",      desc: "Analizar el código del branch actual y generar un informe de revisión detallado.",                                                                                                     priority: "important" },
+  { cmd: "/diff",             desc: "Mostrar las diferencias entre el estado actual y el anterior del código.",                                                                                                             priority: "important" },
+  { cmd: "/btw",              desc: "Hacer una pregunta lateral sin agregar al historial. Claude ve el contexto completo pero responde sin herramientas ni turnos adicionales. Ideal para dudas rápidas mientras trabaja.", priority: "important" },
+  { cmd: "/context",          desc: "Ver estadísticas de contexto y uso de tokens.",                                                                                                                                        priority: "important" },
+  { cmd: "/usage",            desc: "Ver uso del plan activo y límites de la cuenta.",                                                                                                                                      priority: "important" },
+  { cmd: "/permissions",      desc: "Ver y actualizar permisos de herramientas.",                                                                                                                                           priority: "important" },
+  { cmd: "/mcp",              desc: "Ver y gestionar servidores MCP conectados.",                                                                                                                                           priority: "important" },
+  { cmd: "/rewind",           desc: "Rebobinar a un punto anterior de la conversación (ESC+ESC).",                                                                                                                          priority: "important" },
+  { cmd: "/memory",           desc: "Mostrar y editar archivos de memoria del proyecto.",                                                                                                                                   priority: "important" },
   // Useful
-  { cmd: "/statusline",  desc: "Configurar la línea de estado de Claude Code.",              priority: "useful" },
-  { cmd: "/teleport",    desc: "Reanudar una sesión remota existente.",                      priority: "useful" },
-  { cmd: "/review",      desc: "Lanzar revisión de código del branch actual.",               priority: "useful" },
-  { cmd: "/login",       desc: "Autenticarse con tu cuenta de Anthropic.",                   priority: "useful" },
-  { cmd: "/logout",      desc: "Cerrar sesión de la cuenta activa.",                         priority: "useful" },
-  { cmd: "/vim",         desc: "Activar modo de edición estilo Vim en el prompt.",           priority: "useful" },
-  { cmd: "/doctor",      desc: "Diagnosticar configuración e instalación del entorno.",      priority: "useful" },
-  { cmd: "/cost",        desc: "Mostrar el costo de tokens usados en la sesión.",            priority: "useful" },
+  { cmd: "/debug",            desc: "Activar modo debug para ver logs internos y trazas detalladas de cada acción.",                                                                                                        priority: "useful" },
+  { cmd: "/review",           desc: "Lanzar revisión de código del branch actual o de un PR de GitHub.",                                                                                                                    priority: "useful" },
+  { cmd: "/rename",           desc: "Renombrar la conversación o sesión actual.",                                                                                                                                           priority: "useful" },
+  { cmd: "/theme",            desc: "Cambiar el tema visual de la interfaz de Claude Code.",                                                                                                                                priority: "useful" },
+  { cmd: "/export",           desc: "Exportar la conversación actual a un archivo de texto o JSON.",                                                                                                                        priority: "useful" },
+  { cmd: "/extra-usage",      desc: "Ver estadísticas de uso extendidas y desglose detallado de consumo de tokens.",                                                                                                        priority: "useful" },
+  { cmd: "/plugin",           desc: "Ver y gestionar plugins instalados en Claude Code.",                                                                                                                                   priority: "useful" },
+  { cmd: "/privacy-settings", desc: "Configurar opciones de privacidad y retención de datos de la sesión.",                                                                                                                 priority: "useful" },
+  { cmd: "/mobile",           desc: "Ajustar configuración de visualización para dispositivos móviles.",                                                                                                                    priority: "useful" },
+  { cmd: "/voice",            desc: "Activar/desactivar entrada de voz para el prompt.",                                                                                                                                    priority: "useful" },
+  { cmd: "/statusline",       desc: "Configurar la línea de estado de Claude Code.",                                                                                                                                        priority: "useful" },
+  { cmd: "/teleport",         desc: "Reanudar una sesión remota existente.",                                                                                                                                                priority: "useful" },
+  { cmd: "/login",            desc: "Autenticarse con tu cuenta de Anthropic.",                                                                                                                                             priority: "useful" },
+  { cmd: "/logout",           desc: "Cerrar sesión de la cuenta activa.",                                                                                                                                                   priority: "useful" },
+  { cmd: "/vim",              desc: "Activar modo de edición estilo Vim en el prompt.",                                                                                                                                     priority: "useful" },
+  { cmd: "/doctor",           desc: "Diagnosticar configuración e instalación del entorno.",                                                                                                                                priority: "useful" },
+  { cmd: "/cost",             desc: "Mostrar el costo de tokens usados en la sesión.",                                                                                                                                      priority: "useful" },
 ];
 
 const cliFlags: { flag: string; desc: string; priority: Priority }[] = [
@@ -126,10 +144,10 @@ const SECTION_ORDER = ["Slash Commands", "Flags del CLI", "Shortcuts", "Inputs E
 
 // ── Utils ─────────────────────────────────────────────────────────────────────
 
-const PRIORITY_DOT: Record<Priority, string> = {
-  essential: "bg-orange-500",
-  important: "bg-yellow-500",
-  useful:    "bg-zinc-600",
+const PRIORITY_STARS: Record<Priority, { filled: number; color: string }> = {
+  essential: { filled: 3, color: "text-orange-500" },
+  important: { filled: 2, color: "text-yellow-400" },
+  useful:    { filled: 1, color: "text-zinc-500"   },
 };
 const PRIORITY_LABEL: Record<Priority, string> = {
   essential: "esencial",
@@ -137,13 +155,15 @@ const PRIORITY_LABEL: Record<Priority, string> = {
   useful:    "útil",
 };
 
-function PriorityDot({ priority }: { priority?: Priority }) {
+function PriorityStars({ priority }: { priority?: Priority }) {
   if (!priority) return null;
+  const { filled, color } = PRIORITY_STARS[priority];
   return (
-    <span
-      title={PRIORITY_LABEL[priority]}
-      className={`mt-1 h-1.5 w-1.5 shrink-0 rounded-full ${PRIORITY_DOT[priority]}`}
-    />
+    <span className="flex shrink-0 gap-px leading-none" title={PRIORITY_LABEL[priority]}>
+      {[0, 1, 2].map((i) => (
+        <span key={i} className={`text-sm ${i < filled ? color : "text-zinc-700"}`}>★</span>
+      ))}
+    </span>
   );
 }
 
@@ -196,13 +216,20 @@ function SectionHeader({ label, title, count }: { label: string; title: string; 
 
 function PriorityLegend() {
   return (
-    <div className="mb-3 flex items-center gap-4 text-xs text-zinc-600">
-      {(["essential", "important", "useful"] as Priority[]).map((p) => (
-        <span key={p} className="flex items-center gap-1.5">
-          <span className={`h-1.5 w-1.5 rounded-full ${PRIORITY_DOT[p]}`} />
-          {PRIORITY_LABEL[p]}
-        </span>
-      ))}
+    <div className="mb-3 flex items-center gap-5 text-xs text-zinc-600">
+      {(["essential", "important", "useful"] as Priority[]).map((p) => {
+        const { filled, color } = PRIORITY_STARS[p];
+        return (
+          <span key={p} className="flex items-center gap-1.5">
+            <span className="flex gap-px">
+              {[0, 1, 2].map((i) => (
+                <span key={i} className={`text-xs ${i < filled ? color : "text-zinc-700"}`}>★</span>
+              ))}
+            </span>
+            {PRIORITY_LABEL[p]}
+          </span>
+        );
+      })}
     </div>
   );
 }
@@ -210,7 +237,9 @@ function PriorityLegend() {
 function CommandCard({ cmd, desc, priority }: { cmd: string; desc: string; priority?: Priority }) {
   return (
     <div className="flex items-start gap-3 rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-all hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5">
-      <PriorityDot priority={priority} />
+      <div className="mt-0.5 shrink-0">
+        <PriorityStars priority={priority} />
+      </div>
       <div className="min-w-0">
         <code className="block text-sm font-bold text-orange-400 break-all">{cmd}</code>
         <span className="mt-1 block text-xs text-zinc-500 leading-relaxed">{desc}</span>
@@ -222,7 +251,9 @@ function CommandCard({ cmd, desc, priority }: { cmd: string; desc: string; prior
 function ShortcutCard({ keys, desc, priority }: { keys: string[]; desc: string; priority?: Priority }) {
   return (
     <div className="flex items-start gap-3 rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-all hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5">
-      <PriorityDot priority={priority} />
+      <div className="mt-0.5 shrink-0">
+        <PriorityStars priority={priority} />
+      </div>
       <div className="min-w-0">
         <div className="mb-1.5 flex flex-wrap items-center gap-1">
           {keys.map((k, i) => (
@@ -244,7 +275,7 @@ function ConfigCard({ entry }: { entry: typeof configKeys[number] }) {
   return (
     <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-all hover:border-pink-500/30 hover:shadow-lg hover:shadow-pink-500/5">
       <div className="flex items-start gap-3">
-        <PriorityDot priority={entry.priority} />
+        <PriorityStars priority={entry.priority} />
         <div className="min-w-0 flex-1">
           <code className="text-sm font-bold text-pink-400">{entry.key}</code>
           <p className="mt-1 text-xs text-zinc-500 leading-relaxed">{entry.desc}</p>
@@ -267,7 +298,7 @@ function ResultCard({ item, query }: { item: Item; query: string }) {
   return (
     <div className="flex items-start gap-3 rounded-lg border border-zinc-800 bg-zinc-900 p-4 transition-all hover:border-orange-500/40 hover:shadow-lg hover:shadow-orange-500/5">
       <div className="flex shrink-0 flex-col items-center gap-2 pt-0.5">
-        {item.priority && <PriorityDot priority={item.priority} />}
+        {item.priority && <PriorityStars priority={item.priority} />}
         <span className={`rounded border px-1.5 py-0.5 text-xs font-mono ${tagStyle}`}>
           {item.tag}
         </span>
@@ -531,7 +562,7 @@ export default function Comandos() {
                   <div className="divide-y divide-zinc-800/50">
                     {cliFlags.map((f) => (
                       <div key={f.flag} className="flex items-start gap-3 px-4 py-3 hover:bg-zinc-800/30 transition-colors">
-                        <PriorityDot priority={f.priority} />
+                        <PriorityStars priority={f.priority} />
                         <div className="min-w-0">
                           <code className="block text-sm text-violet-400 break-all">{f.flag}</code>
                           <span className="mt-0.5 block text-xs text-zinc-500">{f.desc}</span>
