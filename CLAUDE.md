@@ -49,3 +49,9 @@ app/globals.css           # Tokens de color y fuente con @theme de Tailwind v4
 - No extraer datos a archivos separados sin confirmación (hay una propuesta en SPEC.md pero no está aprobada)
 - No agregar dependencias sin preguntar
 - No crear archivos de documentación adicionales salvo que se solicite explícitamente
+
+## Documentación de Contexto para IA
+
+- Toda la documentación detallada del proyecto está en `docs/ai-context/`
+- Para actualizar el contexto: usa el comando `/update-ai-context`
+- El agente `documentation-specialist` es el responsable de mantener esta documentación actualizada.

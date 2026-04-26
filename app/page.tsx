@@ -1,5 +1,16 @@
 import { ModulosInteractivos } from "./components/ModulosInteractivos";
 
+type SpecSeccion = {
+  numero: string;
+  nombre: string;
+};
+
+type WorkflowStep = {
+  cmd: string;
+  titulo: string;
+  descripcion: string;
+};
+
 type Agente = {
   tipo: string;
   descripcion: string;
@@ -146,6 +157,162 @@ function AgentesYSkillsSection() {
   );
 }
 
+function SpecMdSection() {
+  return (
+    <section
+      id="spec"
+      aria-labelledby="spec-heading"
+      className="border-t border-zinc-800/50"
+    >
+      <div className="mx-auto max-w-5xl px-6 py-24">
+        {/* Header */}
+        <div className="mb-14 text-center">
+          <p className="text-xs uppercase tracking-widest text-orange-500">
+            {"// spec.md"}
+          </p>
+          <h2
+            id="spec-heading"
+            className="mt-2 text-3xl font-bold text-white"
+          >
+            Escribe el spec. Luego construye.
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-500">
+            Sin contexto, Claude improvisa decisiones de arquitectura. Con un{" "}
+            <code className="text-orange-400">SPEC.md</code>, ejecuta con
+            precisión desde el primer token — cero preguntas, cero retrabajo.
+          </p>
+        </div>
+
+        {/* Before / After */}
+        <div className="mb-14 grid gap-4 lg:grid-cols-2">
+          <div>
+            <p className="mb-2 text-xs text-zinc-600 uppercase tracking-widest">
+              sin spec
+            </p>
+            <div className="rounded-lg border border-zinc-800 bg-zinc-900 shadow-xl shadow-black/30">
+              <div className="flex items-center gap-2 border-b border-zinc-800 px-4 py-3">
+                <span className="h-3 w-3 rounded-full bg-red-500" aria-hidden="true" />
+                <span className="h-3 w-3 rounded-full bg-yellow-500" aria-hidden="true" />
+                <span className="h-3 w-3 rounded-full bg-green-500" aria-hidden="true" />
+                <span className="ml-2 text-xs text-zinc-500">terminal</span>
+              </div>
+              <div
+                aria-label="Ejemplo sin SPEC.md: Claude hace preguntas y aborta"
+                className="space-y-1 p-4 text-xs leading-relaxed"
+              >
+                <p>
+                  <span className="text-orange-500">~</span>{" "}
+                  <span className="text-zinc-300">claude</span>{" "}
+                  <span className="text-zinc-500">&quot;implementa el sistema de pagos&quot;</span>
+                </p>
+                <p className="text-zinc-500">→ ¿Usamos Stripe o PayPal?</p>
+                <p className="text-zinc-500">→ ¿El carrito persiste en sesión o en DB?</p>
+                <p className="text-zinc-500">→ ¿Necesitamos webhooks o polling?</p>
+                <p className="text-zinc-500">→ ¿Enviamos emails de confirmación?</p>
+                <p className="text-zinc-500">→ ¿Multi-divisa o solo USD?</p>
+                <p className="text-red-400/70 pt-1">
+                  ✖ Demasiada ambigüedad — abortando.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-xs text-orange-500/70 uppercase tracking-widest">
+              con SPEC.md
+            </p>
+            <div className="rounded-lg border border-orange-500/20 bg-zinc-900 shadow-xl shadow-black/30">
+              <div className="flex items-center gap-2 border-b border-zinc-800 px-4 py-3">
+                <span className="h-3 w-3 rounded-full bg-red-500" aria-hidden="true" />
+                <span className="h-3 w-3 rounded-full bg-yellow-500" aria-hidden="true" />
+                <span className="h-3 w-3 rounded-full bg-green-500" aria-hidden="true" />
+                <span className="ml-2 text-xs text-zinc-500">terminal</span>
+              </div>
+              <div
+                aria-label="Ejemplo con SPEC.md: Claude ejecuta sin preguntas"
+                className="space-y-1 p-4 text-xs leading-relaxed"
+              >
+                <p>
+                  <span className="text-orange-500">~</span>{" "}
+                  <span className="text-zinc-300">claude</span>
+                </p>
+                <p className="text-zinc-500">→ Leyendo SPEC.md...</p>
+                <p className="text-zinc-500">→ Stripe Checkout — definido en spec</p>
+                <p className="text-zinc-500">→ Carrito en DB — definido en spec</p>
+                <p className="text-zinc-500">→ Creando webhook handler...</p>
+                <p className="text-zinc-500">→ Configurando emails con Resend...</p>
+                <p className="text-green-400 pt-1">
+                  ✔ 4 archivos. 0 preguntas. Listo.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Workflow */}
+        <div className="mb-14">
+          <div className="mb-6 flex items-center gap-3">
+            <span className="text-orange-500" aria-hidden="true">→</span>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              El flujo
+            </h3>
+            <div className="flex-1 border-t border-zinc-800" />
+          </div>
+          <ol
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            aria-label="Flujo de trabajo con SPEC.md"
+          >
+            {workflowSteps.map((step, i) => (
+              <li
+                key={step.cmd}
+                className="relative rounded border border-zinc-800 bg-zinc-900/60 p-4"
+              >
+                <span className="absolute right-3 top-3 tabular-nums text-xs text-zinc-700">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <code className="mb-2 block text-sm text-orange-400">
+                  {step.cmd}
+                </code>
+                <p className="text-xs font-semibold text-zinc-300">
+                  {step.titulo}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-zinc-500">
+                  {step.descripcion}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        {/* Estructura como referencia compacta */}
+        <div>
+          <div className="mb-4 flex items-center gap-3">
+            <span className="text-orange-500" aria-hidden="true">→</span>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
+              Estructura típica
+            </h3>
+            <div className="flex-1 border-t border-zinc-800" />
+          </div>
+          <ul
+            className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5"
+            aria-label="Secciones de un SPEC.md"
+          >
+            {specSecciones.map((s) => (
+              <li
+                key={s.numero}
+                className="rounded border border-zinc-800 bg-zinc-900/60 px-3 py-2.5"
+              >
+                <span className="text-xs text-orange-500/50">{s.numero}</span>
+                <p className="mt-0.5 text-xs text-zinc-400">{s.nombre}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-950 font-mono text-zinc-100">
@@ -266,6 +433,8 @@ export default function Home() {
 
         <AgentesYSkillsSection />
 
+        <SpecMdSection />
+
         <footer className="border-t border-zinc-800 py-8 text-center text-xs text-zinc-600">
           <p>
             © {new Date().getFullYear()}{" "}
@@ -277,6 +446,46 @@ export default function Home() {
     </div>
   );
 }
+
+const workflowSteps: WorkflowStep[] = [
+  {
+    cmd: "$ vim SPEC.md",
+    titulo: "Escribe el spec",
+    descripcion:
+      "Define requisitos, flujo de usuario y contexto técnico antes de abrir Claude.",
+  },
+  {
+    cmd: "/review",
+    titulo: "Claude lo revisa",
+    descripcion:
+      "Detecta ambigüedades y huecos. Tú los resuelves — sin haber escrito código aún.",
+  },
+  {
+    cmd: "✔ aprobado",
+    titulo: "Confirman juntos",
+    descripcion:
+      "Acuerdan el alcance. Claude ya no necesita inventar ni preguntar nada.",
+  },
+  {
+    cmd: "$ claude",
+    titulo: "Claude construye",
+    descripcion:
+      "Ejecuta el spec de principio a fin. Sin improvisación. Sin retrabajo.",
+  },
+];
+
+const specSecciones: SpecSeccion[] = [
+  { numero: "01", nombre: "Nombre de la feature" },
+  { numero: "02", nombre: "Objetivo / Problema" },
+  { numero: "03", nombre: "Requisitos funcionales" },
+  { numero: "04", nombre: "Requisitos no funcionales" },
+  { numero: "05", nombre: "Flujo de usuario" },
+  { numero: "06", nombre: "Estructura de datos" },
+  { numero: "07", nombre: "Endpoints / Backend" },
+  { numero: "08", nombre: "Consideraciones UI/UX" },
+  { numero: "09", nombre: "Criterios de aceptación" },
+  { numero: "10", nombre: "Notas técnicas" },
+];
 
 const agentes: Agente[] = [
   {
