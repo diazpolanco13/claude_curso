@@ -105,29 +105,29 @@ type Item = {
 };
 ```
 
-### `slashCommands` — 34 items
+### `slashCommands` — 38 items
 
 ```ts
 { cmd: string; desc: string; priority: Priority }[]
 ```
 
-Slash commands prefixed with `/`. Priorities: 6 essential, 15 important, 13 useful.
+Slash commands prefixed with `/`. Priorities: 6 essential, 19 important, 13 useful.
 
-### `cliFlags` — 13 items
+### `cliFlags` — 16 items
 
 ```ts
 { flag: string; desc: string; priority: Priority }[]
 ```
 
-Shell invocations starting with `claude`. Priorities: 4 essential, 5 important, 4 useful.
+Shell invocations starting with `claude`. Priorities: 4 essential, 7 important, 5 useful.
 
-### `keyboardShortcuts` — 12 items
+### `keyboardShortcuts` — 15 items
 
 ```ts
 { keys: string[]; desc: string; priority: Priority }[]
 ```
 
-`keys` is an array of key labels rendered as `<kbd>` elements. Priorities: 4 essential, 4 important, 4 useful.
+`keys` is an array of key labels rendered as `<kbd>` elements. Priorities: 4 essential, 4 important, 7 useful.
 
 ### `specialInputs` — 6 items
 
@@ -155,7 +155,7 @@ No `priority` field. Icon is an emoji string.
 
 ### `ALL_ITEMS: Item[]`
 
-Flat array combining all sections. Total count displayed in page hero. As of last audit: `slashCommands.length + cliFlags.length + keyboardShortcuts.length + specialInputs.length + configKeys.length + proTips.length` items.
+Flat array combining all sections. Total count displayed in page hero. As of last audit: 86 items (38 + 16 + 15 + 6 + 5 + 6).
 
 ### `SECTION_ORDER: string[]`
 
