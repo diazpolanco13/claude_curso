@@ -777,6 +777,12 @@ export default function Home() {
           </code>
           <div className="flex items-center gap-3">
             <a
+              href="/flujo"
+              className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
+            >
+              flujo
+            </a>
+            <a
               href="/comandos"
               className="text-xs text-zinc-500 transition-colors hover:text-zinc-300"
             >
