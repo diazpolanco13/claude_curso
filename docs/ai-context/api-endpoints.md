@@ -10,14 +10,16 @@ This project has **no API routes**. There is no `app/api/` directory. All data i
 
 - **File:** `app/page.tsx`
 - **Rendering:** React Server Component (RSC) — no `"use client"` at top level
-- **Client boundary:** `<ModulosInteractivos />` is the only client component rendered on this page
+- **Client boundaries:** `<ModulosInteractivos />` and `<HooksInteractivos />` are the two client components rendered on this page
 - **Sections rendered:**
   1. Nav bar
   2. Hero (headline, CTAs, terminal demo)
   3. Stats strip (10 Modules / 100% Spanish / CLI)
   4. Modules section — delegates to `<ModulosInteractivos />`
   5. Agentes y Skills section — server-rendered cards from hardcoded `agentes[]` and `skills[]` arrays
-  6. Footer
+  6. Hooks section — anatomy explainer + delegates to `<HooksInteractivos />`
+  7. Spec.md section — before/after terminal demo, workflow steps, spec structure reference
+  8. Footer
 
 ### `GET /comandos`
 

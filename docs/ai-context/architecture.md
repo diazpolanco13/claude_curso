@@ -25,7 +25,19 @@ Landing page for a Claude Code course in Spanish. Static-first site with no back
 │   ├── comandos/
 │   │   └── page.tsx            # Route /comandos — CLI reference (Client Component)
 │   └── components/
-│       └── ModulosInteractivos.tsx  # Client Component — interactive module selector
+│       ├── ModulosInteractivos.tsx  # Client Component — interactive module selector
+│       └── HooksInteractivos.tsx    # Client Component — interactive hooks showcase
+├── .claude/
+│   ├── settings.json           # Hooks, permissions, model config (committed to repo)
+│   ├── settings.local.json     # Local overrides (gitignored)
+│   ├── hooks/
+│   │   ├── post-edit/
+│   │   │   ├── format.sh       # PostToolUse: Prettier on Write|Edit
+│   │   │   └── typecheck.sh    # PostToolUse: TypeScript check on Write|Edit
+│   │   └── pre-tool/
+│   │       └── safety-check.sh # PreToolUse: safety guard on Bash
+│   └── commands/
+│       └── plan.md             # /plan skill definition
 ├── docs/
 │   └── ai-context/             # AI context files (this directory)
 ├── public/                     # Static assets (default Next.js)
@@ -53,12 +65,13 @@ There are no API routes (`app/api/`) in this project.
 - Renders `<html lang="en">` with antialiasing and full height
 
 ### `app/page.tsx` (Server Component)
-- Main landing page. Composed entirely of inline Server Components plus one client import.
-- Local types: `Agente`, `Skill`
-- Local components: `AgentCard`, `SkillCard`, `AgentesYSkillsSection`
-- Data arrays defined at module scope (after the default export): `agentes: Agente[]`, `skills: Skill[]`
-- Delegates the interactive modules section to `<ModulosInteractivos />` (the only client boundary on this page)
+- Main landing page. Composed entirely of inline Server Components plus two client imports.
+- Local types: `Agente`, `Skill`, `SpecSeccion`, `WorkflowStep`
+- Local server components: `AgentCard`, `SkillCard`, `AgentesYSkillsSection`, `HooksSection`, `SpecMdSection`
+- Data arrays defined at module scope (after the default export): `agentes: Agente[]`, `skills: Skill[]`, `workflowSteps: WorkflowStep[]`, `specSecciones: SpecSeccion[]`
+- Client boundaries: `<ModulosInteractivos />` (modules section) and `<HooksInteractivos />` (hooks section)
 - Uses `.grid-bg` CSS class for the background grid pattern (defined in `globals.css`)
+- Page section order: Nav → Hero → Stats strip → Modules → Agentes & Skills → Hooks → Spec.md → Footer
 
 ### `app/components/ModulosInteractivos.tsx` (Client Component)
 - `"use client"` — uses `useState`, `useCallback`, `useId`
@@ -66,6 +79,16 @@ There are no API routes (`app/api/`) in this project.
 - State: `activo: number` (index of currently selected module, starts at 0)
 - Keyboard support: ArrowUp, ArrowDown, Home, End, Enter, Space
 - Data: `modulos: Modulo[]` array (10 items) defined at module scope inside the file
+
+### `app/components/HooksInteractivos.tsx` (Client Component)
+- `"use client"` — uses `useState`
+- Implements a WAI-ARIA tablist/tabpanel pattern (same pattern as ModulosInteractivos)
+- State: `activo: string` (id of selected hook case), `copiado: boolean` (clipboard feedback)
+- Local types: `HookTipo = "PostToolUse" | "PreToolUse" | "Stop" | "GitHook"`, `HookCaso`
+- Color map `tipoClase: Record<HookTipo, string>` maps each hook type to a colored badge variant
+- Clipboard copy button with 2-second feedback via `navigator.clipboard.writeText`
+- Data: `casos: HookCaso[]` — 3 items (format, notificacion, precommit) defined at module scope
+- Rendered inside `HooksSection` in `app/page.tsx`, which also renders the hook anatomy explainer cards
 
 ### `app/comandos/page.tsx` (Client Component)
 - `"use client"` — uses `useState`, `useMemo`
@@ -117,6 +140,34 @@ All visual tokens are applied via Tailwind CSS v4 utility classes. There is no s
 - Fixed grid: `.grid-bg` class in `globals.css` — orange-tinted 40×40px grid lines using `oklch`
 - Fixed radial gradient: inline `bg-orange-500/20 blur-3xl` blurred circle at top center
 - Both layers use `pointer-events-none fixed inset-0 z-0`; content sits in `relative z-10`
+
+## Claude Code Hooks Architecture
+
+The project ships with a working hooks setup in `.claude/` (committed to the repo, only `settings.local.json` is gitignored).
+
+### Hook configuration — `.claude/settings.json`
+
+Three hook events are configured:
+
+| Event | Matcher | Script | Purpose |
+|---|---|---|---|
+| `PreToolUse` | `Bash` | `.claude/hooks/pre-tool/safety-check.sh` | Guard against destructive shell commands |
+| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/format.sh` | Run Prettier on every edited file |
+| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/typecheck.sh` | TypeScript check after edits |
+| `Stop` | (none) | inline command | macOS notification + stderr log when Claude finishes |
+
+Deny rules in `settings.json` block: `rm -rf /*`, `rm --no-preserve-root`, `git push --force origin main/master`, `git reset --hard`, `chmod -R 777`.
+
+### Hook script conventions
+
+- All hooks output feedback exclusively to **stderr** (`>&2`) — this avoids Claude consuming hook output as context and wasting tokens
+- `format.sh` reads file path from stdin JSON: `python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))"`
+- The Stop hook uses an inline command string in `settings.json` rather than a separate script file
+- The `GitHook` type shown in `HooksInteractivos` is **not** a Claude Code hook — it refers to a native git pre-commit hook (`.git/hooks/pre-commit`), included as an educational counterexample
+
+### `.claude/commands/plan.md`
+
+Defines the `/plan` slash command (skill). Invoked as `/plan` inside Claude Code. Not a hook — it is a skill.
 
 ## Key conventions
 

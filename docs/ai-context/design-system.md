@@ -79,6 +79,21 @@ These colors appear only in tag badges on the `/comandos` page. Do not use them 
 
 Also used in stats chips in the `/comandos` hero (same section-color mapping).
 
+### Hook type badge colors (`HooksInteractivos` component — landing page)
+
+The `HooksInteractivos` component on the landing page (`/`) uses a subset of this same color convention to distinguish hook types. These colors are now also present on the landing page via this component.
+
+Defined in `tipoClase: Record<HookTipo, string>` in `app/components/HooksInteractivos.tsx`:
+
+| HookTipo | Text | Border | Background |
+|---|---|---|---|
+| `PostToolUse` | `text-orange-400` | `border-orange-500/40` | `bg-orange-500/10` |
+| `PreToolUse` | `text-violet-400` | `border-violet-500/40` | `bg-violet-500/10` |
+| `Stop` | `text-emerald-400` | `border-emerald-500/40` | `bg-emerald-500/10` |
+| `GitHook` | `text-sky-400` | `border-sky-500/40` | `bg-sky-500/10` |
+
+`GitHook` is an educational type shown in the component to distinguish native git hooks from Claude Code hooks. It is not a real Claude Code event type.
+
 ## Background Decoration
 
 Applied to every page. Both layers sit behind content:
@@ -108,10 +123,10 @@ Content always sits in `<div className="relative z-10">`.
 
 ## Layout
 
-- Max content width: `max-w-5xl` (sections), `max-w-4xl` (agentes section), `max-w-2xl` (search bar), `max-w-lg` (body copy)
+- Max content width: `max-w-5xl` (sections, including hooks and spec), `max-w-4xl` (agentes section), `max-w-2xl` (search bar), `max-w-lg` (body copy)
 - Horizontal padding: `px-6` on sections, `px-8` on nav
 - Vertical section padding: `py-24` for major sections, `py-16` for `/comandos` hero
-- Responsive grid: `sm:grid-cols-2` for card grids, `lg:grid-cols-2` for two-column layouts, `lg:grid-cols-[320px_1fr]` for the module tablist
+- Responsive grid: `sm:grid-cols-2` for card grids, `lg:grid-cols-2` for two-column layouts, `lg:grid-cols-[320px_1fr]` for the module tablist, `lg:grid-cols-[220px_1fr]` for the hooks tablist
 
 ## Navigation Pattern
 

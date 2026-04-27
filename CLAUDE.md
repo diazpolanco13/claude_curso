@@ -26,10 +26,13 @@ npm run lint     # ESLint — correr antes de cada commit
 ## Estructura de archivos clave
 
 ```
-app/page.tsx              # Landing — datos de módulos al final del archivo (const modulos)
-app/comandos/page.tsx     # Referencia CLI — toda la data hardcodeada en el componente
-app/layout.tsx            # Metadata global del sitio — actualizar title/description aquí
-app/globals.css           # Tokens de color y fuente con @theme de Tailwind v4
+app/page.tsx                          # Landing — Server Component con dos client boundaries:
+                                      #   ModulosInteractivos y HooksInteractivos
+app/components/ModulosInteractivos.tsx  # Client Component — tabs de módulos
+app/components/HooksInteractivos.tsx    # Client Component — tabs de hooks con código copiable
+app/comandos/page.tsx                 # Referencia CLI — toda la data hardcodeada en el componente
+app/layout.tsx                        # Metadata global del sitio — actualizar title/description aquí
+app/globals.css                       # Tokens de color y fuente con @theme de Tailwind v4
 ```
 
 ## Sistema de diseño
@@ -55,3 +58,10 @@ app/globals.css           # Tokens de color y fuente con @theme de Tailwind v4
 - Toda la documentación detallada del proyecto está en `docs/ai-context/`
 - Para actualizar el contexto: usa el comando `/update-ai-context`
 - El agente `documentation-specialist` es el responsable de mantener esta documentación actualizada.
+
+## Memoria del proyecto
+
+Lee estos archivos al inicio de cada sesión para no reabrir decisiones cerradas:
+
+- `.claude/memory/decisions.md` — decisiones técnicas y de diseño ya tomadas
+- `.claude/memory/rejected-patterns.md` — enfoques descartados y por qué
