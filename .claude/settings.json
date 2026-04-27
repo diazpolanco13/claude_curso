@@ -1,0 +1,47 @@
+{
+  "permissions": {
+    "trustedDirectories": ["/Users/diazp/proyectos_claude/claude_curso"],
+    "allow": [
+      "Bash(npm run *)",
+      "Bash(git *)",
+      "Bash(curl *)",
+      "Bash(find *)",
+      "Bash(chmod +x .claude/hooks/*)"
+    ]
+  },
+  "model": "sonnet",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/pre-tool/safety-check.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/post-edit/format.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Claude terminó\" with title \"Claude Code\"' 2>/dev/null || true; echo '🔔 [hook] sesión terminada' >&2"
+          }
+        ]
+      }
+    ]
+  }
+}

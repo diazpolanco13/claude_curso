@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 
+type HookTipo = "PostToolUse" | "PreToolUse" | "Stop" | "GitHook";
+
 type HookCaso = {
   id: string;
   titulo: string;
   subtitulo: string;
-  tipo: "PostToolUse" | "PreToolUse" | "Stop";
+  tipo: HookTipo;
   matcher?: string;
   descripcion: string;
   flujo: { trigger: string; accion: string; resultado: string };
@@ -14,10 +16,11 @@ type HookCaso = {
   archivo: string;
 };
 
-const tipoClase: Record<string, string> = {
+const tipoClase: Record<HookTipo, string> = {
   PostToolUse: "text-orange-400 border-orange-500/40 bg-orange-500/10",
   PreToolUse: "text-violet-400 border-violet-500/40 bg-violet-500/10",
   Stop: "text-emerald-400 border-emerald-500/40 bg-emerald-500/10",
+  GitHook: "text-sky-400 border-sky-500/40 bg-sky-500/10",
 };
 
 export function HooksInteractivos() {
@@ -142,12 +145,11 @@ export function HooksInteractivos() {
 
         {/* File tip */}
         <p className="mt-4 text-xs leading-relaxed text-zinc-600">
-          {caso.archivo.startsWith("~")
-            ? "Archivo global — aplica a todos tus proyectos."
-            : "Archivo de proyecto — aplica solo a este repo."}
-          {" "}Crea el directorio con{" "}
-          <code className="text-zinc-500">mkdir -p {caso.archivo.split("/").slice(0, -1).join("/")}</code>
-          {" "}si no existe.
+          {caso.tipo === "GitHook"
+            ? "Git hook — no es un evento de Claude Code. Git lo ejecuta automáticamente antes de cada commit."
+            : caso.archivo.startsWith("~")
+              ? "Archivo global — aplica a todos tus proyectos."
+              : "Archivo de proyecto — aplica solo a este repo."}
         </p>
       </div>
     </div>
@@ -156,94 +158,25 @@ export function HooksInteractivos() {
 
 const casos: HookCaso[] = [
   {
-    id: "lint",
-    titulo: "Auto-lint",
-    subtitulo: "Detecta errores al instante",
+    id: "format",
+    titulo: "Prettier automático",
+    subtitulo: "Formatea cada archivo al escribir",
     tipo: "PostToolUse",
     matcher: "Write|Edit",
     descripcion:
-      "Cada vez que Claude edita un archivo, el linter corre automáticamente. Los errores vuelven al contexto y Claude los corrige en la misma sesión — sin que tengas que pedírselo.",
+      "Cada vez que Claude escribe o edita un archivo, este script lee el path desde el JSON que Claude Code envía por stdin, y corre Prettier en silencio. El feedback aparece en tu terminal via stderr — sin consumir tokens.",
     flujo: {
-      trigger: "Claude edita un archivo",
-      accion: "npm run lint",
-      resultado: "Errores vuelven al contexto",
+      trigger: "Claude escribe o edita un archivo",
+      accion: "format.sh lee stdin → prettier",
+      resultado: "✨ [hook] prettier → archivo (stderr)",
     },
-    codigo: `{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npm run lint --silent"
-          }
-        ]
-      }
-    ]
-  }
-}`,
-    archivo: ".claude/settings.json",
-  },
-  {
-    id: "typecheck",
-    titulo: "TypeScript check",
-    subtitulo: "Errores de tipo en tiempo real",
-    tipo: "PostToolUse",
-    matcher: "Write|Edit",
-    descripcion:
-      "Corre el compilador de TypeScript después de cada cambio. Claude ve los errores de tipo y los resuelve antes de continuar — ideal para proyectos con TypeScript estricto.",
-    flujo: {
-      trigger: "Claude escribe código",
-      accion: "tsc --noEmit",
-      resultado: "Errores de tipo visibles",
-    },
-    codigo: `{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx tsc --noEmit 2>&1 | head -20"
-          }
-        ]
-      }
-    ]
-  }
-}`,
-    archivo: ".claude/settings.json",
-  },
-  {
-    id: "tests",
-    titulo: "Tests automáticos",
-    subtitulo: "TDD sin intervención manual",
-    tipo: "PostToolUse",
-    matcher: "Write|Edit",
-    descripcion:
-      "Cada vez que Claude escribe código, los tests corren solos. Si fallan, Claude ve el output y los corrige. Un loop de feedback continuo que convierte a Claude en un desarrollador TDD.",
-    flujo: {
-      trigger: "Claude escribe código",
-      accion: "npm test",
-      resultado: "Fallos visibles para Claude",
-    },
-    codigo: `{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npm test -- --watchAll=false --passWithNoTests 2>&1 | tail -15"
-          }
-        ]
-      }
-    ]
-  }
-}`,
-    archivo: ".claude/settings.json",
+    codigo: `#!/bin/bash
+FILE=$(python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))" 2>/dev/null)
+if [[ "$FILE" =~ \\.(ts|tsx|js|jsx|json)$ ]]; then
+  npx prettier --write "$FILE" >/dev/null 2>&1
+  echo "✨ [hook] prettier → $FILE" >&2
+fi`,
+    archivo: ".claude/hooks/post-edit/format.sh",
   },
   {
     id: "notificacion",
@@ -251,11 +184,11 @@ const casos: HookCaso[] = [
     subtitulo: "Avisa cuando Claude acaba",
     tipo: "Stop",
     descripcion:
-      "Cuando Claude termina una tarea larga, el sistema operativo te notifica. Puedes lanzar a Claude en una tarea compleja, ir a hacer otra cosa, y recibir el aviso cuando esté listo.",
+      "Cuando Claude termina una tarea larga, el sistema operativo te notifica con una alerta macOS y un mensaje en la terminal. La clave: todo va a stderr, así que Claude no lo lee y no gasta tokens.",
     flujo: {
-      trigger: "Claude termina la sesión",
-      accion: "osascript / notify-send",
-      resultado: "Notificación del sistema",
+      trigger: "Claude termina de responder",
+      accion: "osascript + echo >&2",
+      resultado: "Notificación macOS + log en terminal",
     },
     codigo: `{
   "hooks": {
@@ -264,37 +197,7 @@ const casos: HookCaso[] = [
         "hooks": [
           {
             "type": "command",
-            "command": "osascript -e 'display notification \\"Claude terminó\\" with title \\"Claude Code\\"'"
-          }
-        ]
-      }
-    ]
-  }
-}`,
-    archivo: "~/.claude/settings.json",
-  },
-  {
-    id: "git",
-    titulo: "Git auto-stage",
-    subtitulo: "Stagea cambios automáticamente",
-    tipo: "PostToolUse",
-    matcher: "Write|Edit",
-    descripcion:
-      "Cada archivo que Claude crea o modifica queda en stage automáticamente. Al terminar la sesión, solo tienes que revisar y hacer commit — Claude no toca tu historial git, pero te prepara el trabajo.",
-    flujo: {
-      trigger: "Claude escribe un archivo",
-      accion: "git add -A",
-      resultado: "Cambios listos para commit",
-    },
-    codigo: `{
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "git add -A 2>/dev/null || true"
+            "command": "osascript -e 'display notification \\"Claude terminó\\" with title \\"Claude Code\\"' 2>/dev/null || true; echo '🔔 [hook] sesión terminada' >&2"
           }
         ]
       }
@@ -302,5 +205,33 @@ const casos: HookCaso[] = [
   }
 }`,
     archivo: ".claude/settings.json",
+  },
+  {
+    id: "precommit",
+    titulo: "Limpieza pre-commit",
+    subtitulo: "Elimina console.log al commitear",
+    tipo: "GitHook",
+    descripcion:
+      "Este no es un hook de Claude Code — es un git hook real. Se ejecuta automáticamente con cada git commit, busca console.log en archivos TypeScript y los elimina. Cero tokens, cero intervención de Claude.",
+    flujo: {
+      trigger: "git commit",
+      accion: "find + sed elimina console.log",
+      resultado: "🧹 [pre-commit] código limpio",
+    },
+    codigo: `#!/bin/bash
+FOUND=$(find . -type f \\( -name "*.ts" -o -name "*.tsx" \\) \\
+  ! -path "*/node_modules/*" ! -path "*/.next/*" \\
+  ! -path "*/*.test.*" ! -path "*/*.spec.*" \\
+  -exec grep -l "console\\.log" {} + 2>/dev/null)
+
+if [[ -n "$FOUND" ]]; then
+  echo "$FOUND" | while read -r file; do
+    sed -i '' '/console\\.log/d' "$file"
+    echo "🧹 [pre-commit] console.log eliminado → $file"
+  done
+else
+  echo "✅ [pre-commit] sin console.log — código limpio"
+fi`,
+    archivo: ".git/hooks/pre-commit",
   },
 ];
