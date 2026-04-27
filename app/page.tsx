@@ -1,4 +1,5 @@
 import { ModulosInteractivos } from "./components/ModulosInteractivos";
+import { HooksInteractivos } from "./components/HooksInteractivos";
 
 type SpecSeccion = {
   numero: string;
@@ -152,6 +153,70 @@ function AgentesYSkillsSection() {
             </p>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function HooksSection() {
+  return (
+    <section
+      id="hooks"
+      aria-labelledby="hooks-heading"
+      className="border-t border-zinc-800/50"
+    >
+      <div className="mx-auto max-w-5xl px-6 py-24">
+        <div className="mb-10 text-center">
+          <p className="text-xs uppercase tracking-widest text-orange-500">
+            {"// hooks"}
+          </p>
+          <h2
+            id="hooks-heading"
+            className="mt-2 text-3xl font-bold text-white"
+          >
+            Automatiza tu flujo con Hooks
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-zinc-500">
+            Los hooks ejecutan comandos shell automáticamente en respuesta a
+            acciones de Claude — antes o después de usar herramientas, o al
+            terminar la sesión. Sin prompts extra, sin interrupciones.
+          </p>
+        </div>
+
+        {/* Anatomía de un hook */}
+        <div className="mb-10 grid gap-3 sm:grid-cols-3">
+          {[
+            {
+              campo: "tipo",
+              desc: "cuándo se dispara",
+              ejemplos: "PostToolUse · PreToolUse · Stop",
+              color: "text-orange-400",
+            },
+            {
+              campo: "matcher",
+              desc: "qué herramienta lo activa",
+              ejemplos: "Write · Edit · Bash · .*",
+              color: "text-violet-400",
+            },
+            {
+              campo: "command",
+              desc: "qué ejecuta en shell",
+              ejemplos: "npm run lint · git add · tsc",
+              color: "text-sky-400",
+            },
+          ].map((f) => (
+            <div
+              key={f.campo}
+              className="rounded border border-zinc-800 bg-zinc-900/60 p-4"
+            >
+              <code className={`text-sm ${f.color}`}>{f.campo}</code>
+              <p className="mt-1 text-xs text-zinc-500">{f.desc}</p>
+              <p className="mt-2 text-xs text-zinc-700">{f.ejemplos}</p>
+            </div>
+          ))}
+        </div>
+
+        <HooksInteractivos />
       </div>
     </section>
   );
@@ -432,6 +497,8 @@ export default function Home() {
         </section>
 
         <AgentesYSkillsSection />
+
+        <HooksSection />
 
         <SpecMdSection />
 
