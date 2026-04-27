@@ -181,7 +181,7 @@ type Item = {
 { cmd: string; desc: string; priority: Priority }[]
 ```
 
-Slash commands prefixed with `/`. Priorities: 6 essential, 19 important, 13 useful.
+Slash commands prefixed with `/`. Priorities: 6 essential, 15 important, 17 useful.
 
 ### `cliFlags` — 16 items
 
@@ -189,7 +189,7 @@ Slash commands prefixed with `/`. Priorities: 6 essential, 19 important, 13 usef
 { flag: string; desc: string; priority: Priority }[]
 ```
 
-Shell invocations starting with `claude`. Priorities: 4 essential, 7 important, 5 useful.
+Shell invocations starting with `claude`. Priorities: 4 essential, 5 important, 7 useful.
 
 ### `keyboardShortcuts` — 15 items
 

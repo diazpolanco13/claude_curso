@@ -96,7 +96,9 @@ Defined in `tipoClase: Record<HookTipo, string>` in `app/components/HooksInterac
 
 ## Background Decoration
 
-Applied to every page. Both layers sit behind content:
+Both the landing page (`/`) and `/comandos` use the same two-layer look: a fixed 40×40px grid plus a top-centered orange radial glow. The glow markup is the same; only the grid implementation differs.
+
+**Landing (`/`):** the grid uses the `.grid-bg` class. Both layers sit behind content:
 
 ```tsx
 {/* Fixed grid */}
@@ -117,7 +119,7 @@ The `.grid-bg` utility is defined in `globals.css`:
 }
 ```
 
-Note: on the `/comandos` page the grid is applied with inline styles (not `.grid-bg`) — this is a minor inconsistency. If touching that file, migrate to `.grid-bg`.
+**`/comandos`:** the grid is duplicated with inline `style` (RGBA gradients, same 40px step) — not `.grid-bg`. This is a minor inconsistency; when editing that file, prefer migrating the grid to `.grid-bg` for a single source of truth.
 
 Content always sits in `<div className="relative z-10">`.
 

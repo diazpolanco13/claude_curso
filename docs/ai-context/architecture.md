@@ -33,11 +33,16 @@ Landing page for a Claude Code course in Spanish. Static-first site with no back
 │   ├── hooks/
 │   │   ├── post-edit/
 │   │   │   ├── format.sh       # PostToolUse: Prettier on Write|Edit
-│   │   │   └── typecheck.sh    # PostToolUse: TypeScript check on Write|Edit
+│   │   │   ├── typecheck.sh   # PostToolUse: TypeScript check on Write|Edit
+│   │   │   └── lint.sh        # PostToolUse: ESLint on Write|Edit (.ts/.tsx/.js/.jsx)
 │   │   └── pre-tool/
 │   │       └── safety-check.sh # PreToolUse: safety guard on Bash
-│   └── commands/
-│       └── plan.md             # /plan skill definition
+│   └── commands/               # Prompts invocables (ej. vía @ en Claude Code)
+│       ├── commit-push.md
+│       ├── debug.md
+│       ├── new-feature.md
+│       ├── plan.md
+│       └── update-ai-context.md
 ├── docs/
 │   └── ai-context/             # AI context files (this directory)
 ├── public/                     # Static assets (default Next.js)
@@ -61,7 +66,7 @@ There are no API routes (`app/api/`) in this project.
 ### `app/layout.tsx` (Server)
 - Loads `Geist` and `Geist_Mono` via `next/font/google`
 - Exposes them as CSS variables `--font-geist-sans` and `--font-geist-mono`
-- Sets global `metadata` (currently still the default Create Next App values — update `title` and `description` here)
+- Sets global `metadata` in `app/layout.tsx` (still the default Create Next App `title` and `description`; replace for production)
 - Renders `<html lang="en">` with antialiasing and full height
 
 ### `app/page.tsx` (Server Component)
@@ -137,9 +142,9 @@ All visual tokens are applied via Tailwind CSS v4 utility classes. There is no s
 
 ### Background decoration
 
-- Fixed grid: `.grid-bg` class in `globals.css` — orange-tinted 40×40px grid lines using `oklch`
-- Fixed radial gradient: inline `bg-orange-500/20 blur-3xl` blurred circle at top center
-- Both layers use `pointer-events-none fixed inset-0 z-0`; content sits in `relative z-10`
+- Landing (`/`): fixed grid via `.grid-bg` in `globals.css` (oklch orange-tinted 40×40px lines) plus top radial `bg-orange-500/20 blur-3xl`
+- `/comandos`: same visual grid uses **inline `style` background** (not `.grid-bg`); see `design-system.md` if unifying
+- Content always sits in `relative z-10` above `pointer-events-none` fixed background layers
 
 ## Claude Code Hooks Architecture
 
@@ -152,22 +157,24 @@ Three hook events are configured:
 | Event | Matcher | Script | Purpose |
 |---|---|---|---|
 | `PreToolUse` | `Bash` | `.claude/hooks/pre-tool/safety-check.sh` | Guard against destructive shell commands |
-| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/format.sh` | Run Prettier on every edited file |
-| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/typecheck.sh` | TypeScript check after edits |
+| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/format.sh` | Prettier on saved paths |
+| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/typecheck.sh` | `tsc --noEmit` on TypeScript/TSX files |
+| `PostToolUse` | `Write\|Edit` | `.claude/hooks/post-edit/lint.sh` | ESLint (stdout carries rule output for the agent) |
 | `Stop` | (none) | inline command | macOS notification + stderr log when Claude finishes |
 
 Deny rules in `settings.json` block: `rm -rf /*`, `rm --no-preserve-root`, `git push --force origin main/master`, `git reset --hard`, `chmod -R 777`.
 
 ### Hook script conventions
 
-- All hooks output feedback exclusively to **stderr** (`>&2`) — this avoids Claude consuming hook output as context and wasting tokens
-- `format.sh` reads file path from stdin JSON: `python3 -c "import sys,json; print(json.load(sys.stdin).get('tool_input',{}).get('file_path',''))"`
+- `format.sh` and `typecheck.sh` report status to **stderr**; avoid noisy stdout
+- `lint.sh` writes ESLint diagnostics to **stdout** when there are issues (intentional, so the agent can fix them)
+- Post-edit scripts read `file_path` from stdin JSON via a small `python3 -c` one-liner
 - The Stop hook uses an inline command string in `settings.json` rather than a separate script file
 - The `GitHook` type shown in `HooksInteractivos` is **not** a Claude Code hook — it refers to a native git pre-commit hook (`.git/hooks/pre-commit`), included as an educational counterexample
 
-### `.claude/commands/plan.md`
+### `.claude/commands/*.md`
 
-Defines the `/plan` slash command (skill). Invoked as `/plan` inside Claude Code. Not a hook — it is a skill.
+Markdown prompts bajo control de versiones (p. ej. `plan.md`, `update-ai-context.md`, `new-feature.md`, `commit-push.md`, `debug.md`). No son hooks; se usan como guías o comandos referenciados desde el flujo de Claude Code.
 
 ## Key conventions
 
