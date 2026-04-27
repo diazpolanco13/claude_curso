@@ -34,13 +34,29 @@ This project has **no API routes**. There is no `app/api/` directory. All data i
   5. Default view (when `query` is empty) — full sections: Slash Commands, CLI Flags, Keyboard Shortcuts, Special Inputs, Configuration, Pro Tips
   6. Footer
 
+### `GET /flujo`
+
+- **File:** `app/flujo/page.tsx`
+- **Rendering:** Server Component — delegates interactive content to `<FlujoDeTrabajo />` (Client Component)
+- **Functionality:** Static workflow reference guide with two tabs; no network requests
+- **Sections:**
+  1. Nav (link back to `/`, active `/flujo` link, link to `/comandos`, version badge `guía v1.0`)
+  2. Header (page title + description)
+  3. `<FlujoDeTrabajo />` — two tabs:
+     - `# flujo de trabajo`: situation → tool/command cards with priority indicators
+     - `# arquitectura`: two-column grid showing `~/.claude/` vs `.claude/` configuration levels
+  4. Footer
+
 ## Navigation links
 
 | From | Label | Target |
 |---|---|---|
 | `/` hero | `$ ver módulos` | `#modulos` (anchor on same page) |
 | `/` hero | `# comandos & shortcuts` | `/comandos` |
+| `/` nav | `flujo` | `/flujo` |
 | `/comandos` nav | `>_ Claude Code` | `/` |
+| `/flujo` nav | `>_ .claude/` | `/` |
+| `/flujo` nav | `referencia CLI` | `/comandos` |
 
 ## No external API calls
 

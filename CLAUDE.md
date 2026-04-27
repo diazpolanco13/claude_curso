@@ -4,9 +4,10 @@
 
 ## Qué es este proyecto
 
-Landing page de un curso de Claude Code en español. Dos rutas:
+Landing page de un curso de Claude Code en español. Tres rutas:
 - `/` — Página de presentación con módulos del curso
 - `/comandos` — Referencia completa del CLI con búsqueda en tiempo real
+- `/flujo` — Guía del flujo de trabajo con Claude Code (prioridades y arquitectura .claude/)
 
 ## Comandos esenciales
 
@@ -31,6 +32,9 @@ app/page.tsx                          # Landing — Server Component con dos cli
 app/components/ModulosInteractivos.tsx  # Client Component — tabs de módulos
 app/components/HooksInteractivos.tsx    # Client Component — tabs de hooks con código copiable
 app/comandos/page.tsx                 # Referencia CLI — toda la data hardcodeada en el componente
+app/flujo/page.tsx                    # Server Component — guía de flujo de trabajo con Claude Code
+app/components/FlujoDeTrabajo.tsx     # Client Component — tabs de prioridades y arquitectura .claude/
+data/flujo.ts                         # Único archivo de datos extraído aprobado (tipos y arrays de contenido)
 app/layout.tsx                        # Metadata global del sitio — actualizar title/description aquí
 app/globals.css                       # Tokens de color y fuente con @theme de Tailwind v4
 ```
@@ -64,7 +68,7 @@ app/globals.css                       # Tokens de color y fuente con @theme de T
 ## Qué no hacer
 
 - No cambiar la estética visual sin que el usuario lo pida
-- No extraer datos a archivos separados sin confirmación (hay una propuesta en SPEC.md pero no está aprobada)
+- No extraer datos a archivos separados sin confirmación (`data/flujo.ts` es el único caso aprobado hasta ahora)
 - No agregar dependencias sin preguntar
 - No crear archivos de documentación adicionales salvo que se solicite explícitamente
 

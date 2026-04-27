@@ -24,9 +24,14 @@ Landing page for a Claude Code course in Spanish. Static-first site with no back
 │   ├── page.tsx                # Route / — landing page (Server Component)
 │   ├── comandos/
 │   │   └── page.tsx            # Route /comandos — CLI reference (Client Component)
+│   ├── flujo/
+│   │   └── page.tsx            # Route /flujo — workflow guide (Server Component with client boundary)
 │   └── components/
 │       ├── ModulosInteractivos.tsx  # Client Component — interactive module selector
-│       └── HooksInteractivos.tsx    # Client Component — interactive hooks showcase
+│       ├── HooksInteractivos.tsx    # Client Component — interactive hooks showcase
+│       └── FlujoDeTrabajo.tsx       # Client Component — tabbed workflow/architecture reference
+├── data/
+│   └── flujo.ts                # Exported data + types for /flujo page (first extracted data file)
 ├── .claude/
 │   ├── settings.json           # Hooks, permissions, model config (committed to repo)
 │   ├── settings.local.json     # Local overrides (gitignored)
@@ -58,6 +63,7 @@ Landing page for a Claude Code course in Spanish. Static-first site with no back
 |---|---|---|
 | `/` | `app/page.tsx` | Server Component (RSC) |
 | `/comandos` | `app/comandos/page.tsx` | Client Component (`"use client"`) |
+| `/flujo` | `app/flujo/page.tsx` | Server Component — renders `<FlujoDeTrabajo />` client boundary |
 
 There are no API routes (`app/api/`) in this project.
 
@@ -94,6 +100,22 @@ There are no API routes (`app/api/`) in this project.
 - Clipboard copy button with 2-second feedback via `navigator.clipboard.writeText`
 - Data: `casos: HookCaso[]` — 3 items (format, notificacion, precommit) defined at module scope
 - Rendered inside `HooksSection` in `app/page.tsx`, which also renders the hook anatomy explainer cards
+
+### `app/flujo/page.tsx` (Server Component)
+- Metadata: `title: 'Flujo de Trabajo — .claude/ guía'`
+- Page layout: nav → header → `<main>` with `<FlujoDeTrabajo />` → footer
+- Nav brand: `<a href="/">` with label `>_ .claude/`; right side: links to `/flujo` (active) and `/comandos`, plus version badge `guía v1.0`
+- Grid background: inline `style` (same RGBA orange pattern as `/comandos`, not `.grid-bg` — consistent with that page)
+- Delegates all interactive content to `<FlujoDeTrabajo />` client component
+
+### `app/components/FlujoDeTrabajo.tsx` (Client Component)
+- `"use client"` — uses `useState`
+- Local type `Tab = 'flujo' | 'arquitectura'`; state: `activeTab: Tab` (starts at `'flujo'`)
+- Imports data from `@/data/flujo.ts` (separate data file — first extracted data file in the project)
+- Two tabs rendered with `border-b-2 border-orange-500` for active, `text-zinc-500 hover:text-zinc-300` for inactive
+- **Tab "flujo":** renders `flujoData` as a list of situation→action cards with priority color-coding (orange/yellow/zinc dot + border)
+- **Tab "arquitectura":** renders `arquitecturaData` as a 2-column grid (`lg:grid-cols-2`); each card shows `ruta` in orange, file paths in `sky-400`, descriptions in `text-zinc-500`
+- Priority config (`prioridadConfig`) maps `Prioridad` to label, textColor, borderColor, dotColor
 
 ### `app/comandos/page.tsx` (Client Component)
 - `"use client"` — uses `useState`, `useMemo`
@@ -168,7 +190,7 @@ Deny rules in `settings.json` block: `rm -rf /*`, `rm --no-preserve-root`, `git 
 
 - `format.sh` and `typecheck.sh` report status to **stderr**; avoid noisy stdout
 - `lint.sh` writes ESLint diagnostics to **stdout** when there are issues (intentional, so the agent can fix them)
-- Post-edit scripts read `file_path` from stdin JSON via a small `python3 -c` one-liner
+- Post-edit scripts read `file_path` from stdin JSON via a `node -e` one-liner (replaced `python3 -c` for Windows compatibility — see commit `1cc33cf`)
 - The Stop hook uses an inline command string in `settings.json` rather than a separate script file
 - The `GitHook` type shown in `HooksInteractivos` is **not** a Claude Code hook — it refers to a native git pre-commit hook (`.git/hooks/pre-commit`), included as an educational counterexample
 
@@ -181,6 +203,7 @@ Markdown prompts bajo control de versiones (p. ej. `plan.md`, `update-ai-context
 - **Server Components by default** — use `"use client"` only when state or browser APIs are needed
 - **No `any` in TypeScript** — build fails on type errors
 - **No `tailwind.config.js`** — Tailwind v4 config goes in `globals.css` with `@theme`
-- **Data stays in component files** — no separate data files until explicitly approved (see SPEC.md)
+- **Data extraction precedent** — `data/flujo.ts` is the first approved extracted data file. For other pages, data still lives in component files per CLAUDE.md; extraction requires explicit approval
+- **Hook scripts use `node` not `python3`** — all hook scripts that parse stdin JSON use a `node -e` one-liner for Windows compatibility (replaced `python3 -c` across format.sh, lint.sh, safety-check.sh)
 - **Accessibility** — ARIA roles and keyboard navigation are present; maintain them when editing components
 - **No new dependencies** without asking the user first

@@ -236,9 +236,72 @@ Controls display and grouping order for search results:
 
 ---
 
+---
+
+## `data/flujo.ts` (first extracted data file)
+
+This is the first data file extracted outside of a component — approved as part of the `/flujo` page implementation.
+
+### `Prioridad`
+
+```ts
+export type Prioridad = 'essential' | 'important' | 'useful'
+```
+
+### `EntradaFlujo`
+
+```ts
+export type EntradaFlujo = {
+  situacion: string  // Description of the situation/trigger
+  usar: string       // Skill or command to use (e.g. "superpowers:brainstorming → superpowers:writing-plans")
+  prioridad: Prioridad
+}
+```
+
+### `flujoData: EntradaFlujo[]` — 5 items
+
+| situacion | usar | prioridad |
+|---|---|---|
+| Nueva feature o idea | `superpowers:brainstorming → superpowers:writing-plans` | essential |
+| Bug o error inesperado | `superpowers:systematic-debugging` | essential |
+| Antes de declarar algo listo | `superpowers:verification-before-completion` | important |
+| Commit y push a GitHub | `/commit-push` | important |
+| Actualizar docs de contexto | `/update-ai-context` | useful |
+
+### `ItemArquitectura`
+
+```ts
+export type ItemArquitectura = {
+  path: string        // File or folder path (relative to the config level root)
+  descripcion: string // What it contains / its purpose
+}
+```
+
+### `NivelArquitectura`
+
+```ts
+export type NivelArquitectura = {
+  nombre: string             // "Global" | "Proyecto"
+  ruta: string               // Root path: "~/.claude/" | ".claude/"
+  descripcion: string        // What belongs at this level
+  items: ItemArquitectura[]
+  regla: string              // One-line rule for what goes here
+}
+```
+
+### `arquitecturaData: NivelArquitectura[]` — 2 items
+
+| nombre | ruta | items count |
+|---|---|---|
+| Global | `~/.claude/` | 2 (settings.json, skills/) |
+| Proyecto | `.claude/` | 6 (CLAUDE.md, commands/, memory/, specs/, agents/, hooks/) |
+
+---
+
 ## Adding or editing data
 
 - Modules: edit `modulos` array in `app/components/ModulosInteractivos.tsx`
 - Agentes/Skills: edit `agentes`/`skills` arrays at the bottom of `app/page.tsx`
 - CLI reference (any category): edit the relevant array in `app/comandos/page.tsx`
-- Do not extract data to separate files without explicit user approval (per CLAUDE.md)
+- Flujo/Arquitectura: edit arrays in `data/flujo.ts`
+- Do not extract other data to separate files without explicit user approval (per CLAUDE.md); `data/flujo.ts` is the only approved extraction so far

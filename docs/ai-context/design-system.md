@@ -59,14 +59,23 @@ Used on interactive cards throughout. Never use a fully opaque orange border on 
 
 ### Active / selected state
 
+Two distinct tab active patterns exist in the project:
+
+**Filled background (ModulosInteractivos):**
 ```
 bg-orange-500/10 text-orange-400
 ```
-Used in `ModulosInteractivos` tab list for the active module. Inactive: `text-zinc-400 hover:bg-zinc-800/40`.
+Used in the `ModulosInteractivos` vertical tab list. Inactive: `text-zinc-400 hover:bg-zinc-800/40`.
 
-### Section-specific accent colors (`/comandos` page only)
+**Underline border (FlujoDeTrabajo):**
+```
+border-b-2 border-orange-500 text-orange-400
+```
+Used in the `FlujoDeTrabajo` horizontal tab bar. Inactive: `text-zinc-500 hover:text-zinc-300`. Tabs sit on a `border-b border-zinc-800` container.
 
-These colors appear only in tag badges on the `/comandos` page. Do not use them on the landing page.
+### Section-specific accent colors (`/comandos` page primarily)
+
+These colors were introduced for tag badges on the `/comandos` page. `sky-400` also appears on `/flujo` for file path display in the architecture tab (`FlujoDeTrabajo` component). Do not use these on the landing page outside of the established patterns.
 
 | Section | Text | Border | Background |
 |---|---|---|---|
@@ -132,20 +141,25 @@ Content always sits in `<div className="relative z-10">`.
 
 ## Navigation Pattern
 
-Both pages share the same nav structure:
+All pages share the same nav structure:
 
 ```tsx
 <nav className="flex items-center justify-between border-b border-zinc-800 px-8 py-4">
+  {/* Brand — link on /comandos and /flujo, plain span on / */}
   <span className="text-sm font-bold tracking-widest text-orange-500 uppercase">
     &gt;_ Claude Code
   </span>
   <span className="rounded border border-zinc-700 bg-zinc-900 px-3 py-1 text-xs text-zinc-400">
-    {label}  {/* "v1.0.0" on landing, "cheatsheet" on /comandos */}
+    {label}  {/* "v1.0.0" on landing, "cheatsheet" on /comandos, "guía v1.0" on /flujo */}
   </span>
 </nav>
 ```
 
-On `/comandos` the brand is an `<a href="/">` link. On `/` it is a plain `<span>`.
+- On `/` the brand is a plain `<span>`; right side has only the version badge.
+- On `/comandos` the brand is an `<a href="/">` link; right side has only the version badge.
+- On `/flujo` the brand is `<a href="/">` with label `>_ .claude/`; right side has nav links to `/flujo` (active, `text-orange-400`) and `/comandos` (`text-zinc-500`), plus the version badge.
+
+Nav link active state on `/flujo`: `text-orange-400 hover:text-orange-300`. Inactive: `text-zinc-500 hover:text-zinc-300`.
 
 ## Component Patterns
 
