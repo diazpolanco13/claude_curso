@@ -46,6 +46,21 @@ app/globals.css                       # Tokens de color y fuente con @theme de T
 
 - **MCP de GitHub** — disponible via `mcp__github__*`. Usar para crear ramas, commits, pull requests y cualquier operación de Git remoto en lugar de `git push` manual cuando sea posible.
 
+## Flujo de trabajo con Claude Code
+
+| Situación | Usar |
+|---|---|
+| Nueva feature o idea | `superpowers:brainstorming` → `superpowers:writing-plans` |
+| Bug o error inesperado | `superpowers:systematic-debugging` |
+| Antes de declarar algo como listo | `superpowers:verification-before-completion` |
+| Commit y push a GitHub | `/commit-push` |
+| Actualizar docs de contexto | `/update-ai-context` |
+
+**Skills de stack disponibles globalmente** (en cualquier proyecto):
+- `nextjs-architect` — App Router, Server Components, caching
+- `react-19-tailwind-4-expert` — React 19, Tailwind 4, componentes modernos
+- `supabase-expert` — Auth, RLS, Edge Functions, Realtime
+
 ## Qué no hacer
 
 - No cambiar la estética visual sin que el usuario lo pida
