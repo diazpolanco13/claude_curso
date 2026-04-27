@@ -209,28 +209,28 @@ fi`,
   {
     id: "precommit",
     titulo: "Limpieza pre-commit",
-    subtitulo: "Elimina console.log al commitear",
+    subtitulo: "Elimina debugs al commitear",
     tipo: "GitHook",
     descripcion:
-      "Este no es un hook de Claude Code — es un git hook real. Se ejecuta automáticamente con cada git commit, busca console.log en archivos TypeScript y los elimina. Cero tokens, cero intervención de Claude.",
+      "Este no es un hook de Claude Code — es un git hook real. Se ejecuta automáticamente con cada git commit, busca llamadas de debug en archivos TypeScript y las elimina. Cero tokens, cero intervención de Claude.",
     flujo: {
       trigger: "git commit",
-      accion: "find + sed elimina console.log",
+      accion: "find + sed elimina debug calls",
       resultado: "🧹 [pre-commit] código limpio",
     },
     codigo: `#!/bin/bash
 FOUND=$(find . -type f \\( -name "*.ts" -o -name "*.tsx" \\) \\
   ! -path "*/node_modules/*" ! -path "*/.next/*" \\
   ! -path "*/*.test.*" ! -path "*/*.spec.*" \\
-  -exec grep -l "console\\.log" {} + 2>/dev/null)
+  -exec grep -lP "^\\s*console\\.log\\(" {} + 2>/dev/null)
 
 if [[ -n "$FOUND" ]]; then
   echo "$FOUND" | while read -r file; do
-    sed -i '' '/console\\.log/d' "$file"
-    echo "🧹 [pre-commit] console.log eliminado → $file"
+    sed -i '' '/^[[:space:]]*console\\.log(/d' "$file"
+    echo "🧹 [pre-commit] debug eliminado → $file"
   done
 else
-  echo "✅ [pre-commit] sin console.log — código limpio"
+  echo "✅ [pre-commit] sin debug calls — código limpio"
 fi`,
     archivo: ".git/hooks/pre-commit",
   },
